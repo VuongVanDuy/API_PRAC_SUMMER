@@ -133,16 +133,15 @@ class DbManagerUser:
     
     def fetch_all_users(self):
         try:
-            self.cursor.execute("SELECT * FROM user")
+            self.cursor.execute("SELECT (id, username, link_icon, token) FROM user")
             users = self.cursor.fetchall()
             result = []
             for user in users:
                 info = {
                     'id': user[0],
                     'username': user[1],
-                    'password': user[2],
-                    'link_icon': user[3],
-                    'token': user[4]
+                    'link_icon': user[2],
+                    'token': user[3]
                 }
                 result.append(info)
             return result
