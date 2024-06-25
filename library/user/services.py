@@ -1,21 +1,38 @@
 from flask import request, jsonify, abort
 from jsonschema import validate, ValidationError
-from functools import wraps
-from ..config.config import UPLOAD_FOLDER
+from flask_jwt_extended import create_access_token
+from ..config.config import UPLOAD_FOLDER, sha256_hash
 from ..database import DbManagerUser
-import os, json
 
 user_schema = {
     "type": "object",
     "properties": {
         "username": {"type": "string"},
         "password": {"type": "string"},
-        "link_icon": {"type": "string"},
-        "token": {"type": "string"}
+        "link_icon": {"type": "string"}
     },
-    "required": ["username", "password", "link_icon", "token"]
+    "required": ["username", "password", "link_icon"]
 }
-
+    
+def check_user_credentials(username, password):
+    db_manager = DbManagerUser(f'{UPLOAD_FOLDER}/data.db')
+    hash_password_true = db_manager.get_password(username)
+    hash_password_check = sha256_hash(password)
+    if (hash_password_true is None) or (hash_password_true != hash_password_check):
+        return False
+    elif hash_password_true == hash_password_check:
+        return True
+    
+def login_service():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    # Xác thực người dùng, ví dụ sử dụng hàm check_user_credentials(username, password)
+    if check_user_credentials(username, password):
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({"msg": "Bad username or password"}), 401
+    
 def get_users_service():
     db_manager = DbManagerUser(f'{UPLOAD_FOLDER}/data.db')
     users = db_manager.fetch_all_users()
@@ -101,35 +118,4 @@ def get_id_user_service(username):
         return jsonify({"id_user": link_icon}), 200
     return abort(404, description="User not found")
 
-def get_token_user_service(username):
-    db_manager = DbManagerUser(f'{UPLOAD_FOLDER}/data.db')
-    token = db_manager.get_token_user(username)
-    db_manager.close()
-    
-    if token:
-        return jsonify({"token": token}), 200
-    return abort(404, description="User not found")
-
-def update_token_valid_service():
-    VALID_TOKENS_FILE = f'{UPLOAD_FOLDER}/valid_tokens.json'
-    try:
-        token_data = request.json
-        if not token_data or 'token' not in token_data:
-            return jsonify({"error": "Invalid data"}), 400
-    
-        if os.path.exists(VALID_TOKENS_FILE):
-            with open(VALID_TOKENS_FILE, 'r') as file:
-                valid_tokens = json.load(file)
-        else:
-            valid_tokens = {'valid_tokens': []}
-            
-        valid_tokens['valid_tokens'].append(token_data['token'])
-
-        with open(VALID_TOKENS_FILE, 'w') as file:
-            json.dump(valid_tokens, file, indent=4)
-
-        return jsonify({"message": "Token updated successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
