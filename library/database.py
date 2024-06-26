@@ -154,23 +154,23 @@ class DbManagerUser:
         except Exception as e:
             return None
     
-    def fetch_all_users(self):
-        try:
-            self.cursor.execute("SELECT * FROM user")
-            users = self.cursor.fetchall()
-            result = []
-            for user in users:
-                info = {
-                    'id': user[0],
-                    'username': user[1],
-                    'password': user[2],
-                    'link_icon': user[3]
-                }
-                result.append(info)
-            return result
-        except Exception as e:
-            print(e)
-            return None
+    # def fetch_all_users(self):
+    #     try:
+    #         self.cursor.execute("SELECT * FROM user")
+    #         users = self.cursor.fetchall()
+    #         result = []
+    #         for user in users:
+    #             info = {
+    #                 'id': user[0],
+    #                 'username': user[1],
+    #                 'password': user[2],
+    #                 'link_icon': user[3]
+    #             }
+    #             result.append(info)
+    #         return result
+    #     except Exception as e:
+    #         print(e)
+    #         return None
 
     def fetch_all_reviews_of_route(self, id_route):
         check_id_route = isinstance(id_route, int)

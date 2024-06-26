@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_jwt_extended import jwt_required
-from .services import (get_users_service, add_user_service, update_link_icon_service,
-                       update_password_service, get_user_password_service, get_user_link_icon_service,
+from .services import (add_user_service, update_link_icon_service, get_user_link_icon_service,
+                       update_password_service, get_user_password_service,
                        get_id_user_service, login_service)
 
 user = Blueprint("user", __name__)
@@ -11,9 +11,9 @@ def login():
     return login_service()
 
 
-@user.route('/users', methods=['GET'])
-def get_users():
-    return get_users_service()
+# @user.route('/users', methods=['GET'])
+# def get_users():
+#     return get_users_service()
 
 
 @user.route('/user', methods=['POST'])
