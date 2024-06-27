@@ -10,16 +10,13 @@ user = Blueprint("user", __name__)
 def login():
     return login_service()
 
+@user.route('/register', methods=['POST'])
+def register():
+    return add_user_service()
 
 @user.route('/users', methods=['GET'])
 def get_users():
     return get_users_service()
-
-
-@user.route('/user', methods=['POST'])
-def add_user():
-    return add_user_service()
-
 
 @user.route('/user/<string:username>/link_icon', methods=['PUT'])
 @jwt_required()
