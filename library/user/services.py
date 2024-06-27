@@ -29,14 +29,6 @@ def login_service():
         return jsonify(access_token=access_token), 200
     else:
         return jsonify({"message": "Bad username or password"}), 401
-    
-def get_users_service():
-    db_manager = DbManagerUser(DATABASE_URL)
-    users = db_manager.fetch_all_users()
-    db_manager.close()
-    if users is not None:
-        return jsonify({'result': users, 'success': True}), 200
-    return jsonify({"message": "Internal Server Error"}), 500
 
 def add_user_service():
     try:

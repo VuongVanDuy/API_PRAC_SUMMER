@@ -14,10 +14,6 @@ def login():
 def register():
     return add_user_service()
 
-# @user.route('/users', methods=['GET'])
-# def get_users():
-#     return get_users_service()
-
 @user.route('/user/<string:username>/link_icon', methods=['PUT'])
 @jwt_required()
 def update_link_icon(username):
