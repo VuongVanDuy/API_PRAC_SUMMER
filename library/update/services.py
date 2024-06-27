@@ -1,5 +1,7 @@
 from flask import jsonify, abort, request
-from ..config.config import UPLOAD_FOLDER
+from ..config import UPLOAD_FOLDER
+from ..validSchema import StatusUpdateSchema
+from marshmallow import ValidationError
 import json
 
 
@@ -17,7 +19,7 @@ def get_info_update_service():
     if exit_code == 200:
         return jsonify(result), 200
     else:
-        return abort(exit_code, description=result)
+        return jsonify({"message": result}), exit_code
 
 def get_update_service():
     file_path = f"{UPLOAD_FOLDER}/update.json"
@@ -34,15 +36,16 @@ def get_update_service():
         result['files_update'] = list_up
         return result, 200
     else:
-        return abort(exit_code, description=result)
+        return jsonify({"message": result}), exit_code
 
 def update_status_service():
     file_path = f"{UPLOAD_FOLDER}/update.json"
     result, exit_code = read_file_info(file_path)
     if exit_code == 200:
-        data = request.json
-        if 'status' not in data:
-            return abort(400, description="Missing status")
+        try:
+            data = StatusUpdateSchema().load(request.json)
+        except ValidationError as e:
+            return jsonify({'message': 'Validation error', 'errors': e.messages}), 400
         
         status = data.get('status')
         result['status'] = status
@@ -51,4 +54,4 @@ def update_status_service():
             json.dump(result, file, indent=4)
         return jsonify({"message": "Status update updated successfully"}), 200
     else:
-        return abort(exit_code, description=result)
+        return jsonify({"message": result}), exit_code

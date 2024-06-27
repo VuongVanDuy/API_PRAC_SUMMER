@@ -9,8 +9,8 @@ class DbManagerUser:
             self.cursor = self.conn.cursor()
         except Exception as e:
             print(e)
-        # self.create_table_user()
-        # self.create_table_review_of_user()
+        self.create_table_user()
+        self.create_table_review_of_user()
 
     def create_table_user(self):
         try:
@@ -22,13 +22,9 @@ class DbManagerUser:
                                 );''')
             self.conn.commit()
         except Exception as e:
-            print(e)
+            return 
         
     def insert_user(self, username, password, link_icon):
-        check_name = bool(re.match(r'^[a-zA-Z0-9_]+$', username))
-        check_pass = bool(re.match(r'^[a-zA-Z0-9_]+$', password))
-        if not check_name or not check_pass:
-            return False
         try:
             password_bytes = password.encode('utf-8')
             sha256 = hashlib.sha256()
@@ -40,7 +36,6 @@ class DbManagerUser:
             self.conn.commit()
             return True
         except Exception as e:
-            print(e)
             return False
             
     def create_table_review_of_user(self):
@@ -56,7 +51,7 @@ class DbManagerUser:
                                 );''')
             self.conn.commit()
         except Exception as e:
-            print(e)
+            return 
         
     def insert_review_of_user(self, id_user, id_route, star_vote, comment):
         check_id_user = isinstance(id_user, int)
