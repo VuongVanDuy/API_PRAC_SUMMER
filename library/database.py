@@ -25,10 +25,6 @@ class DbManagerUser:
             print(e)
         
     def insert_user(self, username, password, link_icon):
-        check_name = bool(re.match(r'^[a-zA-Z0-9_]+$', username))
-        check_pass = bool(re.match(r'^[a-zA-Z0-9_]+$', password))
-        if not check_name or not check_pass:
-            return False
         try:
             password_bytes = password.encode('utf-8')
             sha256 = hashlib.sha256()

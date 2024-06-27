@@ -1,5 +1,5 @@
 from flask import jsonify, abort, request
-from ..config.config import UPLOAD_FOLDER
+from ..config import UPLOAD_FOLDER
 import json
 
 
